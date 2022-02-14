@@ -16,18 +16,18 @@ import kotlin.math.min
 //
 //Итог: у вас должен быть репозиторий на GitHub, в котором будет ваш Gradle-проект.
 
-val paymentTypeVK = "Vk Pay"
-val paymentTypeMastercardMaestro = "Mastercard и Maestro"
-val paymentTypeVisaMir = "Visa и Мир"
+const val PAYMENT_TYPE_VK = "Vk Pay"
+const val PAYMENT_TYPE_MASTERCARD = "Mastercard"
+const val PAYMENT_TYPE_MAESTRO = "Maestro"
+const val PAYMENT_TYPE_VISA = "Visa"
+const val PAYMENT_TYPE_MIR = "Мир"
 
 fun main() {
 
-    val paymentType = paymentTypeVisaMir
-    val аmountPreTransferInRub = 10000F
+    val paymentType = PAYMENT_TYPE_VK
+    val amountPreTransferInRub = 10000F
     val amountInRub = 40000F
-    val commission = commissionCalculation(paymentType, rubToKopecks(аmountPreTransferInRub), rubToKopecks(amountInRub))
-    println(commission)
-
+    val commission = commissionCalculation(paymentType, rubToKopecks(amountPreTransferInRub), rubToKopecks(amountInRub))
 }
 
 fun rubToKopecks(amountInRub: Float): Int {
@@ -35,22 +35,27 @@ fun rubToKopecks(amountInRub: Float): Int {
     return amountInKopecks
 }
 
-fun commissionCalculation(paymentType: String, аmountPreTransferInKopecks: Int, amountInKopecks: Int): Int {
+fun commissionCalculation(
+    paymentType: String = PAYMENT_TYPE_VK,
+    amountPreTransferInKopecks: Int = 0,
+    amountInKopecks: Int
+): Int {
 
     var commission: Int = 0
 
     when (paymentType) {
-        paymentTypeVK -> commission = 0
-        paymentTypeMastercardMaestro -> commission =
-            commissionCalculationForMastercardMaestro(amountInKopecks, аmountPreTransferInKopecks)
-        paymentTypeVisaMir -> commission = commissionCalculationForVisaMir(amountInKopecks)
+        PAYMENT_TYPE_VK -> commission = 0
+        PAYMENT_TYPE_MASTERCARD, PAYMENT_TYPE_MAESTRO -> commission =
+            commissionCalculationForMastercardMaestro(amountInKopecks, amountPreTransferInKopecks)
+        PAYMENT_TYPE_VISA, PAYMENT_TYPE_MIR
+        -> commission = commissionCalculationForVisaMir(amountInKopecks)
+
     }
 
     return commission
 }
 
-
-fun commissionCalculationForMastercardMaestro(amountInKopecks: Int, аmountPreTransferInKopecks: Int): Int {
+fun commissionCalculationForMastercardMaestro(amountInKopecks: Int, amountPreTransferInKopecks: Int): Int {
 
     var commission: Int = 0
 
@@ -58,7 +63,7 @@ fun commissionCalculationForMastercardMaestro(amountInKopecks: Int, аmountPreTr
     val comPercentage = 0.6F
     val comPart = comPercentage / 100
 
-    when (аmountPreTransferInKopecks) {
+    when (amountPreTransferInKopecks) {
         in 0..maxPreAmount -> commission = 0
         else -> commission = (amountInKopecks * comPart + rubToKopecks(20F)).toInt()
     }
